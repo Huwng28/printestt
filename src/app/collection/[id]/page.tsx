@@ -9,15 +9,15 @@ import Image from "next/image";
 const CollectionDetail = () => {
   const router = useRouter();
   const params = useParams();
-  const id = params?.id as string | undefined; // ID có thể là undefined
+  const id = Array.isArray(params?.id) ? params.id[0] : params?.id; // 🔥 Fix lỗi useParams
 
-  const [images, setImages] = useState<{ id: string; url: string }[]>([]);
-  const [collectionName, setCollectionName] = useState("");
+  const [images, setImages] = useState<Array<{ id: string; url: string }>>([]); // ✅ Fix kiểu mảng
+  const [collectionName, setCollectionName] = useState<string>("");
   const [hoveredImage, setHoveredImage] = useState<string | null>(null);
 
   // Nếu không có ID, chuyển về trang cá nhân
   useEffect(() => {
-    if (id === undefined) {
+    if (!id) {
       console.error("❌ Không tìm thấy ID bộ sưu tập");
       router.push("/personal");
     }
@@ -41,8 +41,9 @@ const CollectionDetail = () => {
 
       const fetchedImages = querySnapshot.docs.map((doc) => ({
         id: doc.id,
-        url: doc.data().url,
+        url: doc.data().url as string, // 🔥 Fix lỗi không tìm thấy `url`
       }));
+
       setImages(fetchedImages);
       setCollectionName(`Bộ sưu tập ${id}`);
     } catch (error) {
@@ -84,8 +85,8 @@ const CollectionDetail = () => {
   };
 
   useEffect(() => {
-    if (id && images.length === 0) fetchCollection();
-  }, [id, fetchCollection, images.length]);
+    if (id) fetchCollection();
+  }, [id, fetchCollection]);
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-100 p-6">
@@ -102,7 +103,7 @@ const CollectionDetail = () => {
         </div>
 
         {/* Hiển thị ảnh trong bộ sưu tập */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md-grid-cols-3 lg:grid-cols-4 gap-4">
           {images.length > 0 ? (
             images.map((image) => (
               <div

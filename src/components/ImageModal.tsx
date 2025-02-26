@@ -36,12 +36,12 @@ const ImageModal: React.FC<ImageModalProps> = ({ image, onClose }) => {
             height={0}
             sizes="90vw"
             className="w-auto h-auto max-w-[90vw] max-h-[80vh] object-contain rounded-lg"
-            quality={80} // ⚡ Bây giờ sẽ có hiệu lực            
+            quality={80} //  Bây giờ sẽ có hiệu lực            
             priority
 
           />
 
-          {/* ✅ Nút đóng (✖) gắn vào góc trên bên phải của ảnh */}
+          {/*  Nút đóng (✖) gắn vào góc trên bên phải của ảnh */}
           <button
             className="absolute top-1 right-1 translate-x-1/2 -translate-y-1/2 text-white px-3 py-1 rounded-full z-10"
             onClick={onClose}
@@ -49,12 +49,12 @@ const ImageModal: React.FC<ImageModalProps> = ({ image, onClose }) => {
             ✖
           </button>
 
-          {/* ✅ Nút tải ảnh trên mobile */}
+          {/*  Nút tải ảnh trên mobile */}
           <button
             className="absolute bottom-0 left-1/2 -translate-x-1/2 bg-blue-500 text-white py-2 px-6 rounded-lg shadow-lg"
             onClick={() => downloadImage(image.fullSrc)}
           >
-            📥 Tải ảnh
+            Tải ảnh
           </button>
         </div>
       </div>

@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { FiSearch, FiMenu, FiX , FiHome, FiUser ,  FiLogOut } from "react-icons/fi"; // Import icon
+import { FiSearch, FiMenu, FiX, FiHome, FiUser, FiLogOut } from "react-icons/fi"; // Import icon
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { User } from "firebase/auth";
+import SearchPage from "@/app/search/page";
 
 
 // Danh sách gợi ý có sẵn
@@ -17,6 +18,61 @@ const fixedSuggestions = [
   "technology", "robot", "AI", "cyberpunk", "space", "galaxy",
   "cars", "motorcycle", "race car", "airplane", "train",
   "abstract", "minimalist", "calligraphy", "anime", "fantasy",
+  "sunset", "sunrise", "clouds", "storm", "rainbow", "volcano",
+  "beach", "waves", "coral", "whale", "dolphin", "shark",
+  "tiger", "cheetah", "elephant", "giraffe", "zebra", "kangaroo",
+  "wolf", "bear", "eagle", "owl", "parrot", "penguin",
+  "chocolate", "ice cream", "steak", "pasta", "soup", "salad",
+  "smartphone", "laptop", "VR", "drones", "quantum computing",
+  "sports car", "SUV", "truck", "yacht", "spaceship", "satellite",
+  "gothic", "steampunk", "retro", "pixel art", "sci-fi",
+  "medieval", "fairy tale", "dragons", "unicorn", "wizard",
+  "fireworks", "lanterns", "street art", "graffiti", "murals",
+  "pyramids", "ancient ruins", "caves", "waterfalls", "cliff diving",
+  "mountaineering", "hiking", "camping", "bonfire", "stargazing",
+  "black hole", "supernova", "nebula", "extraterrestrial", "UFO",
+  "samurai", "ninja", "warrior", "knight", "gladiator",
+  "history", "renaissance", "baroque", "art deco", "modernism",
+  "robotics", "nanotechnology", "biotech", "genetics", "CRISPR",
+  "astronomy", "telescopes", "comets", "asteroids", "cosmology",
+  "gardening", "bonsai", "succulents", "floral", "orchids",
+  "ballet", "opera", "theater", "musicals", "symphony",
+  "rock music", "jazz", "blues", "hip-hop", "classical",
+  "tattoo", "piercing", "body art", "henna", "fashion design",
+  "streetwear", "runway", "couture", "vintage", "punk style",
+  "surrealism", "cubism", "pop art", "graffiti art", "psychedelic",
+  "mindfulness", "meditation", "yoga", "zen", "spirituality",
+  "space exploration", "Mars colony", "terraforming", "exoplanets", "dark matter",
+  "historical sites", "UNESCO heritage", "museums", "art galleries", "antique shops",
+  "whale watching", "safari", "birdwatching", "scuba diving", "skydiving",
+  "photography", "portrait", "landscape", "macro", "aerial shots",
+  "board games", "card games", "chess", "puzzles", "arcade",
+  "RPG", "MMORPG", "strategy games", "FPS", "retro gaming",
+  "handmade", "DIY", "crafting", "knitting", "pottery",
+  "robot wars", "AI art", "holograms", "smart cities", "future tech",
+  "cybersecurity", "hacking", "big data", "cloud computing", "IoT",
+  "vintage cars", "classic motorcycles", "steam trains", "hot air balloons", "submarines",
+  "mystery", "thriller", "horror", "science fiction", "fantasy novels",
+  "wildlife photography", "nature reserves", "eco-tourism", "green energy", "sustainable living",
+  "chess tournaments", "esports", "board game nights", "escape rooms", "virtual reality gaming",
+  "space stations", "alien life", "extraterrestrial civilizations", "first contact", "time travel",
+  "coding", "web development", "machine learning", "game development", "app development",
+  "science experiments", "chemistry", "physics", "biology", "geology",
+  "urban exploration", "abandoned buildings", "haunted places", "mystical sites", "time capsules",
+  "aerial drone shots", "GoPro adventures", "travel vlogs", "cinematography", "documentary filmmaking",
+  "classical mythology", "Greek gods", "Norse legends", "Egyptian myths", "Celtic folklore",
+  "mountain biking", "rock climbing", "paragliding", "surfing", "whitewater rafting",
+  "martial arts", "karate", "taekwondo", "kung fu", "Brazilian jiu-jitsu",
+  "wilderness survival", "bushcraft", "foraging", "fire making", "shelter building",
+  "personal finance", "investing", "cryptocurrency", "stock market", "real estate",
+  "cooking", "baking", "grilling", "food photography", "restaurant reviews",
+  "urban legends", "conspiracy theories", "mystery cases", "lost civilizations", "alien abductions",
+  "classic literature", "poetry", "philosophy", "autobiographies", "historical fiction",
+  "psychology", "neuroscience", "cognitive science", "behavioral studies", "dream analysis",
+  "architecture", "landscape design", "interior design", "industrial design", "futuristic architecture",
+  "superheroes", "comic books", "graphic novels", "manga", "anime cosplay",
+  "sailing", "boating", "naval history", "pirates", "marine biology",
+  "instrumental music", "orchestral compositions", "piano solos", "guitar riffs", "electronic beats"
 ];
 
 export default function Navbar() {
@@ -95,7 +151,7 @@ export default function Navbar() {
 
       {/* ✅ Logo */}
       <Link href="/" className="text-2xl font-bold text-red-500">
-        Pinterest Clone
+        Pinterest
       </Link>
 
       {/* ✅ Search Bar */}
@@ -109,8 +165,8 @@ export default function Navbar() {
             className="w-full p-2 border border-gray-300 rounded-full outline-none px-4 pr-10 focus:ring-2 focus:ring-blue-300"
           />
 
-           {/* Nút xóa */}
-           {searchQuery && (
+          {/* Nút xóa */}
+          {searchQuery && (
             <button
               type="button"
               onClick={clearSearch}
@@ -151,30 +207,30 @@ export default function Navbar() {
             <FiLogOut size={24} />
           </button>
         )}
-      </div>   
-       
+      </div>
+
 
       {/* ✅ Hamburger Menu trên mobile */}
       <button className="md:hidden text-gray-600 text-2xl" onClick={toggleMenu}>
         {menuOpen ? <FiX /> : <FiMenu />}
       </button>
 
-      
-       {/* ✅ Menu Mobile */}
-       {menuOpen && (
+
+      {/* ✅ Menu Mobile */}
+      {menuOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={toggleMenu} />
       )}
 
       <div
-        className={`fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-50 transform ${
-          menuOpen ? "translate-x-0" : "translate-x-full"
-        } transition-transform`}
+        className={`fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-50 transform ${menuOpen ? "translate-x-0" : "translate-x-full"
+          } transition-transform`}
       >
         <button className="absolute top-4 right-4 text-2xl" onClick={toggleMenu}>
           <FiX />
         </button>
 
         <ul className="mt-16 space-y-4 p-4">
+
           <li>
             <Link
               href="/"
@@ -185,6 +241,20 @@ export default function Navbar() {
               <span>Trang chủ</span>
             </Link>
           </li>
+
+          <li>
+            <Link
+              href="/search"
+              className="flex items-center space-x-2 text-lg  hover:text-red-500 w-full"
+              onClick={SearchPage}
+            >
+              <FiSearch size={24} />
+              <span>
+                Tìm kiếm
+              </span>
+            </Link>
+          </li>
+
           <li>
             <Link
               href="/personal"
@@ -194,9 +264,10 @@ export default function Navbar() {
               <FiUser size={24} />
               <span>
                 Cá nhân
-                </span>
+              </span>
             </Link>
           </li>
+
           {user && (
             <li>
               <button

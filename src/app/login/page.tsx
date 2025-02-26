@@ -2,18 +2,18 @@
 
 import { useState, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useRouter } from "next/navigation"; // ✅ Dùng next/router cho Pages Router
-import { auth, googleProvider, facebookProvider } from "@/lib/firebaseConfig"; // Import Firebase và các provider
-import { setCookie } from "cookies-next"; // Lưu token vào cookie
+import { useRouter } from "next/navigation";
+import { auth, googleProvider, facebookProvider } from "@/lib/firebaseConfig";
+import { setCookie } from "cookies-next";
 import {
-  createUserWithEmailAndPassword, // Đăng ký tài khoản mới
-  signInWithEmailAndPassword, // Đăng nhập với email và mật khẩu
-  signInWithPopup, // Đăng nhập với popup (Google/Facebook)
-  onAuthStateChanged, // Theo dõi trạng thái đăng nhập của người dùng
-  AuthProvider, // Loại cho provider (Google/Facebook)
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  onAuthStateChanged,
+  AuthProvider,
 } from "firebase/auth";
-import { FcGoogle } from "react-icons/fc"; // Biểu tượng Google
-import { FaFacebook } from "react-icons/fa"; // Biểu tượng Facebook
+import { FcGoogle } from "react-icons/fc";
+import { FaFacebook } from "react-icons/fa";
 
 // Định nghĩa kiểu dữ liệu form
 interface AuthFormInputs {
@@ -101,10 +101,7 @@ export default function AuthPage() {
     }
   };
 
-  // Nếu người dùng đã đăng nhập, chuyển hướng đến trang cá nhân
-  if (isLoggedIn) {
-    return <div>Đã đăng nhập, chuyển đến trang cá nhân...</div>;
-  }
+
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">

@@ -1,28 +1,27 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react"; // Import các hook của React
-import { useRouter, useParams } from "next/navigation"; // Import hook Next.js để xử lý routing
-import { auth, db } from "@/lib/firebaseConfig"; // Import Firebase auth và db
-import { collection, deleteDoc, doc, getDocs } from "firebase/firestore"; // Các hàm Firebase Firestore
-import Image from "next/image"; // Component Image của Next.js
+import { useEffect, useState, useCallback } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { auth, db } from "@/lib/firebaseConfig";
+import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
+import Image from "next/image";
 
 const CollectionDetail = () => {
-  const router = useRouter(); // Khởi tạo router để điều hướng trang
-  const params = useParams(); // Lấy các params từ URL
-  const id = params?.id as string; // Ép kiểu id thành string
+  const router = useRouter();
+  const params = useParams();
+  const id = params?.id as string;
 
-  const [images, setImages] = useState<{ id: string; url: string }[]>([]); // Trạng thái lưu ảnh
-  const [collectionName, setCollectionName] = useState(""); // Trạng thái lưu tên bộ sưu tập
-  const [hoveredImage, setHoveredImage] = useState<string | null>(null); // Trạng thái lưu ảnh đang hover
+  const [images, setImages] = useState<{ id: string; url: string }[]>([]);
+  const [collectionName, setCollectionName] = useState("");
+  const [hoveredImage, setHoveredImage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id) { // Kiểm tra nếu không có id
+    if (!id) {
       console.error("❌ Không tìm thấy ID bộ sưu tập");
-      router.push("/profile"); // Quay lại trang profile nếu không có ID
+      router.push("/personal;");
     }
-  }, [id, router]); // Chạy khi id hoặc router thay đổi
+  }, [id, router]);
 
-  // Hàm lấy ảnh trong bộ sưu tập
   const fetchCollection = useCallback(async () => {
     if (!auth.currentUser || !id) return; // Kiểm tra người dùng đăng nhập và id hợp lệ
 
@@ -69,7 +68,7 @@ const CollectionDetail = () => {
       const userId = auth.currentUser.uid; // Lấy id người dùng
       await deleteDoc(doc(db, "users", userId, "collections", id)); // Xóa bộ sưu tập khỏi Firestore
       alert("✅ Đã xóa bộ sưu tập!"); // Thông báo xóa thành công
-      router.push("/profile"); // Điều hướng về trang profile
+      router.push("/personal;"); // Điều hướng về trang 
     } catch (error) {
       console.error("❌ Lỗi khi xóa bộ sưu tập:", error); // Xử lý lỗi khi xóa bộ sưu tập
     }

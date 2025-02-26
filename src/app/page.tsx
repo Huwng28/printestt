@@ -1,9 +1,9 @@
-"use client"; // Đảm bảo code này chỉ chạy trên client-side.
+"use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useSearchParams } from "next/navigation"; // Lấy tham số tìm kiếm từ URL
-import MasonryGrid from "@/components/MasonryGrid"; // Component hiển thị ảnh dạng lưới
-import ImageModal from "@/components/ImageModal"; // Component hiển thị ảnh trong modal
+import { useSearchParams } from "next/navigation";
+import MasonryGrid from "@/components/MasonryGrid";
+import ImageModal from "@/components/ImageModal";
 
 interface ImageData {
   id: string;
@@ -13,15 +13,15 @@ interface ImageData {
 }
 
 export default function HomePage() {
-  const [images, setImages] = useState<ImageData[]>([]); // State chứa danh sách ảnh tìm kiếm
-  const [page, setPage] = useState(1); // State chứa trang hiện tại
-  const [selectedImage, setSelectedImage] = useState<ImageData | null>(null); // State chứa ảnh được chọn
-  const observerRef = useRef<HTMLDivElement | null>(null); // Tham chiếu đến phần tử để theo dõi khi cuộn
+  const [images, setImages] = useState<ImageData[]>([]);
+  const [page, setPage] = useState(1);
+  const [selectedImage, setSelectedImage] = useState<ImageData | null>(null);
+  const observerRef = useRef<HTMLDivElement | null>(null);
 
-  const searchParams = useSearchParams(); // Lấy các tham số từ URL
-  const query = searchParams.get("q") || ""; // Lấy giá trị từ khóa tìm kiếm từ tham số `q`
+  const searchParams = useSearchParams();
+  const query = searchParams.get("q") || "";
 
-  const API_KEY = process.env.NEXT_PUBLIC_UNSPLASH_API_KEY; // Lấy API Key từ biến môi trường
+  const API_KEY = process.env.NEXT_PUBLIC_UNSPLASH_API_KEY;
 
   // Fetch ảnh từ Unsplash API khi `page` hoặc `query` thay đổi
   const fetchImages = useCallback(async () => {
@@ -42,15 +42,15 @@ export default function HomePage() {
       const data = await res.json(); // Chuyển đổi dữ liệu từ JSON
 
       // Chuyển đổi kết quả từ API để đảm bảo có `fullSrc` (ảnh full-size)
-      const newImages: ImageData[] = (Array.isArray(data) ? data : data.results).map((img: { 
-        id: string; 
-        urls: { small: string; full: string }; 
-        alt_description?: string 
+      const newImages: ImageData[] = (Array.isArray(data) ? data : data.results).map((img: {
+        id: string;
+        urls: { small: string; full: string };
+        alt_description?: string
       }) => ({
         id: img.id, // ID ảnh
         src: img.urls.small, // Ảnh preview
         fullSrc: img.urls.full, // Ảnh full-size
-        alt: img.alt_description || "Image", // Nếu không có mô tả, gán là "Image"
+        alt: img.alt_description || "Image",
       }));
 
       setImages((prev) => {
@@ -87,13 +87,13 @@ export default function HomePage() {
         {query ? `Kết quả tìm kiếm: "${query}"` : "Ảnh Mới Nhất"}
       </h1>
 
-      {/* ✅ Truyền images & hàm mở modal vào MasonryGrid */}
+      {/*  Truyền images & hàm mở modal vào MasonryGrid */}
       <MasonryGrid
         images={images}
         onImageClick={(image) => setSelectedImage(image)} // Mở modal khi chọn ảnh
       />
 
-      {/* 📌 Hiển thị modal khi chọn ảnh */}
+      {/*  Hiển thị modal khi chọn ảnh */}
       {selectedImage && (
         <ImageModal
           image={selectedImage}

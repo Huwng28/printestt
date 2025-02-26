@@ -1,20 +1,18 @@
-"use client"; // Đánh dấu component là client-side, nghĩa là component này chạy trên trình duyệt
+"use client";
 
-import { useEffect, useState } from "react"; // Import các hook cần thiết của React
-import { useRouter } from "next/navigation"; // Import next/router cho Pages Router
-import { auth, db } from "@/lib/firebaseConfig"; // Import cấu hình Firebase
-import { onAuthStateChanged, updateProfile, User } from "firebase/auth"; // Import các hàm từ Firebase auth
-import { doc, getDoc, setDoc } from "firebase/firestore"; // Import các hàm từ Firestore
-import Image from "next/image"; // Import Image từ Next.js
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { auth, db } from "@/lib/firebaseConfig";
+import { onAuthStateChanged, updateProfile, User } from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import Image from "next/image";
 
 const EditProfile = () => {
-  const [user, setUser] = useState<User | null>(null); // State lưu thông tin người dùng
-  const [firstName, setFirstName] = useState(""); // State lưu tên người dùng
-  const [lastName, setLastName] = useState(""); // State lưu họ người dùng
-  const [bio, setBio] = useState(""); // State lưu tiểu sử
-  const [website, setWebsite] = useState(""); // State lưu website
-  const [photoURL, setPhotoURL] = useState(""); // State lưu URL ảnh đại diện
-  const router = useRouter(); // Sử dụng router để điều hướng trang
+  const [user, setUser] = useState<User | null>(null);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [photoURL, setPhotoURL] = useState("");
+  const router = useRouter();
 
   // Lấy dữ liệu người dùng từ Firestore
   useEffect(() => {
@@ -28,8 +26,6 @@ const EditProfile = () => {
           const data = userDoc.data();
           setFirstName(data.firstName || ""); // Cập nhật tên
           setLastName(data.lastName || ""); // Cập nhật họ
-          setBio(data.bio || ""); // Cập nhật tiểu sử
-          setWebsite(data.website || ""); // Cập nhật website
           setPhotoURL(data.photoURL || currentUser.photoURL || ""); // Cập nhật ảnh đại diện
         }
       }
@@ -45,8 +41,6 @@ const EditProfile = () => {
       await setDoc(doc(db, "users", user.uid), {
         firstName, // Cập nhật thông tin người dùng
         lastName,
-        bio,
-        website,
         photoURL,
         username: user.email?.split("@")[0], // Username không thay đổi
       });

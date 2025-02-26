@@ -79,7 +79,7 @@ const ProfilePage = () => {
 
       {/* Bộ sưu tập */}
       <div className="w-full max-w-4xl">
-        <h2 className="text-lg font-semibold mb-4">📁 Bộ sưu tập</h2>       
+        <h2 className="text-lg font-semibold mb-4">📁 Bộ sưu tập</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {collections.map((col) => (
             <Link key={col.id} href={`/collection/${col.id}`}>

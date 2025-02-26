@@ -18,7 +18,7 @@ const CollectionDetail = () => {
   useEffect(() => {
     if (!id) {
       console.error("❌ Không tìm thấy ID bộ sưu tập");
-      router.push("/personal;");
+      router.push("/personal");
     }
   }, [id, router]);
 
@@ -68,7 +68,7 @@ const CollectionDetail = () => {
       const userId = auth.currentUser.uid; // Lấy id người dùng
       await deleteDoc(doc(db, "users", userId, "collections", id)); // Xóa bộ sưu tập khỏi Firestore
       alert("✅ Đã xóa bộ sưu tập!"); // Thông báo xóa thành công
-      router.push("/personal;"); // Điều hướng về trang 
+      router.push("/personal"); // Điều hướng về trang 
     } catch (error) {
       console.error("❌ Lỗi khi xóa bộ sưu tập:", error); // Xử lý lỗi khi xóa bộ sưu tập
     }

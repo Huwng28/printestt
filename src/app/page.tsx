@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import MasonryGrid from "@/components/MasonryGrid";
 import ImageModal from "@/components/ImageModal";
@@ -12,7 +12,7 @@ interface ImageData {
   alt: string;
 }
 
-export default function HomePage() {
+function HomePageContent() {
   const [images, setImages] = useState<ImageData[]>([]);
   const [page, setPage] = useState(1);
   const [selectedImage, setSelectedImage] = useState<ImageData | null>(null);
@@ -36,49 +36,48 @@ export default function HomePage() {
         url = `https://api.unsplash.com/search/photos?page=${page}&per_page=10&query=${encodeURIComponent(query)}&client_id=${API_KEY}`;
       }
 
-      const res = await fetch(url, { cache: "no-store" }); // Gọi API Unsplash với trang và từ khóa
-      if (!res.ok) throw new Error(`Lỗi API: ${res.status}`); // Kiểm tra nếu API không trả kết quả đúng
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error(`Lỗi API: ${res.status}`);
 
-      const data = await res.json(); // Chuyển đổi dữ liệu từ JSON
+      const data = await res.json();
 
-      // Chuyển đổi kết quả từ API để đảm bảo có `fullSrc` (ảnh full-size)
       const newImages: ImageData[] = (Array.isArray(data) ? data : data.results).map((img: {
         id: string;
         urls: { small: string; full: string };
         alt_description?: string
       }) => ({
-        id: img.id, // ID ảnh
-        src: img.urls.small, // Ảnh preview
-        fullSrc: img.urls.full, // Ảnh full-size
+        id: img.id,
+        src: img.urls.small,
+        fullSrc: img.urls.full,
         alt: img.alt_description || "Image",
       }));
 
       setImages((prev) => {
         const allImages = [...prev, ...newImages];
-        return Array.from(new Map(allImages.map((img) => [img.id, img])).values()); // Loại bỏ ảnh trùng lặp
+        return Array.from(new Map(allImages.map((img) => [img.id, img])).values());
       });
     } catch (error) {
-      console.error("❌ Lỗi khi fetch ảnh:", error); // Xử lý lỗi
+      console.error("❌ Lỗi khi fetch ảnh:", error);
     }
   }, [page, query, API_KEY]);
 
   useEffect(() => {
-    fetchImages(); // Gọi hàm fetch ảnh khi trang tải
-  }, [fetchImages]); // Chạy lại khi `fetchImages` thay đổi
+    fetchImages();
+  }, [fetchImages]);
 
   useEffect(() => {
     if (!observerRef.current) return;
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          setPage((prevPage) => prevPage + 1); // Tăng trang khi cuộn đến cuối
+          setPage((prevPage) => prevPage + 1);
         }
       },
-      { rootMargin: "1000px" } // Kích hoạt khi gần đến cuối trang
+      { rootMargin: "1000px" }
     );
 
-    observer.observe(observerRef.current); // Theo dõi phần tử có ref
-    return () => observer.disconnect(); // Ngắt kết nối observer khi component unmount
+    observer.observe(observerRef.current);
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -87,22 +86,27 @@ export default function HomePage() {
         {query ? `Kết quả tìm kiếm: "${query}"` : "Ảnh Mới Nhất"}
       </h1>
 
-      {/*  Truyền images & hàm mở modal vào MasonryGrid */}
       <MasonryGrid
         images={images}
-        onImageClick={(image) => setSelectedImage(image)} // Mở modal khi chọn ảnh
+        onImageClick={(image) => setSelectedImage(image)}
       />
 
-      {/*  Hiển thị modal khi chọn ảnh */}
       {selectedImage && (
         <ImageModal
           image={selectedImage}
-          onClose={() => setSelectedImage(null)} // Đóng modal khi nhấn nút đóng
+          onClose={() => setSelectedImage(null)}
         />
       )}
 
-      {/* Loader để load thêm ảnh */}
       <div ref={observerRef} className="h-10"></div>
     </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomePageContent />
+    </Suspense>
   );
 }

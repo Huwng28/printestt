@@ -22,10 +22,6 @@ const CollectionDetail = () => {
     }
   }, [id, router]); // Chạy khi id hoặc router thay đổi
 
-  useEffect(() => {
-    console.log("🟡 Params:", params);
-  }, [params]);
-
   // Hàm lấy ảnh trong bộ sưu tập
   const fetchCollection = useCallback(async () => {
     if (!auth.currentUser || !id) return; // Kiểm tra người dùng đăng nhập và id hợp lệ

@@ -5,9 +5,9 @@ export function middleware(req: NextRequest) {
   const authToken = req.cookies.get("authToken")?.value;
   const path = req.nextUrl.pathname;
 
-  // ✅ Bỏ qua middleware cho các route không cần auth
-  const publicRoutes = ["/login", "/signup", "/"]; // Thêm các route không yêu cầu đăng nhập
-  if (publicRoutes.includes(path) || path.startsWith("/collection/")) {
+  // ✅ Bỏ qua middleware cho các route không cần đăng nhập
+  const publicRoutes = ["/login", "/signup", "/"];
+  if (publicRoutes.includes(path) || path.match(/^\/collection\/.+/)) {
     return NextResponse.next();
   }
 
@@ -19,7 +19,7 @@ export function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-// 🔥 Chỉ áp dụng middleware cho trang cần bảo vệ, không ảnh hưởng API & file tĩnh
+// 🔥 Chỉ áp dụng middleware cho trang cần bảo vệ
 export const config = {
   matcher: ["/((?!api|_next|.*\\..*).*)"],
 };

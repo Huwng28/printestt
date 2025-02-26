@@ -6,7 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { FiSearch, FiMenu, FiX, FiHome, FiUser, FiLogOut } from "react-icons/fi"; // Import icon
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { User } from "firebase/auth";
-import SearchPage from "@/app/search/page";
+
 
 
 // Danh sách gợi ý có sẵn
@@ -155,14 +155,14 @@ export default function Navbar() {
       </Link>
 
       {/* ✅ Search Bar */}
-      <div className="hidden md:flex relative flex-1 mx-4 max-w-xl">
+      <div className="flex relative flex-1 mx-2 sm:mx-4 max-w-full sm:max-w-xl">
         <form onSubmit={handleSearch} className="relative w-full">
           <input
             type="text"
             placeholder="Tìm kiếm ảnh..."
             value={searchQuery}
             onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-full outline-none px-4 pr-10 focus:ring-2 focus:ring-blue-300"
+            className="w-full p-3 border border-gray-300 rounded-full outline-none px-4 pr-10 focus:ring-2 focus:ring-blue-300"
           />
 
           {/* Nút xóa */}
@@ -239,19 +239,6 @@ export default function Navbar() {
             >
               <FiHome size={24} />
               <span>Trang chủ</span>
-            </Link>
-          </li>
-
-          <li>
-            <Link
-              href="/search"
-              className="flex items-center space-x-2 text-lg  hover:text-red-500 w-full"
-              onClick={SearchPage}
-            >
-              <FiSearch size={24} />
-              <span>
-                Tìm kiếm
-              </span>
             </Link>
           </li>
 

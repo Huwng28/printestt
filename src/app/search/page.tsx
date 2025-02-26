@@ -1,6 +1,6 @@
 "use client"; // Đảm bảo code này chỉ chạy trên client-side.
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation"; // Hook lấy tham số từ URL
 import MasonryGrid from "@/components/MasonryGrid"; // Component hiển thị ảnh dạng lưới
 import ImageModal from "@/components/ImageModal"; // Component hiển thị ảnh trong modal
@@ -12,11 +12,20 @@ interface ImageData {
   alt: string;
 }
 
+// Component lấy từ khóa tìm kiếm từ URL (bọc trong Suspense)
+function SearchQuery({ setQuery }: { setQuery: (q: string) => void }) {
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    setQuery(searchParams.get("q") || "");
+  }, [searchParams, setQuery]);
+
+  return null;
+}
+
 export default function SearchPage() {
   const [images, setImages] = useState<ImageData[]>([]); // State chứa danh sách ảnh tìm kiếm
   const [selectedImage, setSelectedImage] = useState<ImageData | null>(null); // State chứa ảnh được chọn
-  const searchParams = useSearchParams(); // Lấy các tham số từ URL
-  const query = searchParams.get("q") || ""; // Lấy giá trị từ khóa tìm kiếm từ tham số `q`
+  const [query, setQuery] = useState(""); // State chứa từ khóa tìm kiếm
 
   const API_KEY = process.env.NEXT_PUBLIC_UNSPLASH_API_KEY; // Lấy API Key từ biến môi trường
 
@@ -37,10 +46,10 @@ export default function SearchPage() {
         const data = await res.json(); // Chuyển đổi dữ liệu từ JSON
 
         // Chuyển đổi kết quả từ API để đảm bảo có `fullSrc` (ảnh full-size)
-        const newImages = data.results.map((img: { 
-          id: string; 
-          urls: { small: string; full: string }; 
-          alt_description?: string 
+        const newImages = data.results.map((img: {
+          id: string;
+          urls: { small: string; full: string };
+          alt_description?: string
         }) => ({
           id: img.id, // ID ảnh
           src: img.urls.small, // Ảnh preview
@@ -59,6 +68,11 @@ export default function SearchPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
+      {/* Bọc SearchQuery trong Suspense để tránh lỗi */}
+      <Suspense fallback={null}>
+        <SearchQuery setQuery={setQuery} />
+      </Suspense>
+
       <h1 className="text-2xl font-bold mb-4">
         {query ? `Kết quả tìm kiếm: "${query}"` : "Tìm kiếm ảnh"} {/* Hiển thị tiêu đề */}
       </h1>

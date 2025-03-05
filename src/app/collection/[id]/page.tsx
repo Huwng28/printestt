@@ -9,7 +9,7 @@ import Image from "next/image";
 const CollectionDetail = () => {
   const router = useRouter();
   const params = useParams();
-  const id = Array.isArray(params?.id) ? params.id[0] : params?.id; // 🔥 Đảm bảo ID là string
+  const id = typeof params?.id === "string" ? params.id : params?.id?.[0]; // 🔥 Kiểm tra id
 
   const [images, setImages] = useState<Array<{ id: string; url: string }>>([]);
   const [collectionName, setCollectionName] = useState<string>("Đang tải...");
@@ -26,11 +26,7 @@ const CollectionDetail = () => {
 
   // ✅ Hàm lấy ảnh từ Firestore
   const fetchCollection = useCallback(async () => {
-    if (!id) return;
-    if (!auth.currentUser) {
-      console.error("❌ Người dùng chưa đăng nhập");
-      return;
-    }
+    if (!id || !auth.currentUser) return;
 
     try {
       setLoading(true); // Bắt đầu tải dữ liệu
@@ -38,19 +34,8 @@ const CollectionDetail = () => {
       const imagesRef = collection(db, "users", userId, "collections", id, "images");
       const querySnapshot = await getDocs(imagesRef);
 
-      if (querySnapshot.empty) {
-        console.warn("⚠️ Bộ sưu tập trống hoặc không tồn tại!");
-        setCollectionName("Bộ sưu tập trống");
-      } else {
-        setCollectionName(`Bộ sưu tập ${id}`);
-      }
-
-      const fetchedImages = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        url: doc.data().url as string,
-      }));
-
-      setImages(fetchedImages);
+      setCollectionName(querySnapshot.empty ? "Bộ sưu tập trống" : `Bộ sưu tập ${id}`);
+      setImages(querySnapshot.docs.map(doc => ({ id: doc.id, url: doc.data().url as string })));
     } catch (error) {
       console.error("❌ Lỗi khi lấy ảnh:", error);
     } finally {
@@ -66,28 +51,32 @@ const CollectionDetail = () => {
   // ✅ Hàm xóa ảnh
   const deleteImage = async (imageId: string) => {
     if (!auth.currentUser || !id) return;
-
-    const confirmDelete = confirm("Bạn có chắc muốn xóa ảnh này?");
-    if (!confirmDelete) return;
+    if (!confirm("Bạn có chắc muốn xóa ảnh này?")) return;
 
     try {
       const userId = auth.currentUser.uid;
       await deleteDoc(doc(db, "users", userId, "collections", id, "images", imageId));
-      setImages((prevImages) => prevImages.filter((image) => image.id !== imageId));
+      setImages(prevImages => prevImages.filter(image => image.id !== imageId));
     } catch (error) {
       console.error("❌ Lỗi khi xóa ảnh:", error);
     }
   };
 
-  // ✅ Hàm xóa bộ sưu tập
+  // ✅ Hàm xóa bộ sưu tập (bao gồm xóa toàn bộ ảnh bên trong)
   const deleteCollection = async () => {
     if (!auth.currentUser || !id) return;
-
-    const confirmDelete = confirm("Bạn có chắc muốn xóa bộ sưu tập này?");
-    if (!confirmDelete) return;
+    if (!confirm("Bạn có chắc muốn xóa bộ sưu tập này?")) return;
 
     try {
       const userId = auth.currentUser.uid;
+
+      // Xóa tất cả ảnh trong bộ sưu tập trước
+      const imagesRef = collection(db, "users", userId, "collections", id, "images");
+      const imagesSnapshot = await getDocs(imagesRef);
+      const deletePromises = imagesSnapshot.docs.map(imageDoc => deleteDoc(imageDoc.ref));
+      await Promise.all(deletePromises);
+
+      // Xóa bộ sưu tập chính
       await deleteDoc(doc(db, "users", userId, "collections", id));
       alert("✅ Đã xóa bộ sưu tập!");
       router.push("/personal");
@@ -115,7 +104,7 @@ const CollectionDetail = () => {
           <p className="text-gray-500 text-center w-full">Đang tải ảnh...</p>
         ) : images.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {images.map((image) => (
+            {images.map(image => (
               <div
                 key={image.id}
                 className="relative group overflow-hidden rounded-lg shadow-md"
@@ -128,6 +117,7 @@ const CollectionDetail = () => {
                   width={300}
                   height={200}
                   className="w-full h-40 object-cover transition-transform transform group-hover:scale-105"
+                  priority
                 />
 
                 {/* Nút xóa chỉ hiển thị khi hover */}

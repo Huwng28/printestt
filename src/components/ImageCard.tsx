@@ -49,10 +49,12 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageUrl }) => {
           alt="Ảnh"
           width={300}
           height={400}
-          quality={80} //  Bây giờ sẽ có hiệu lực
+          quality={50}
           className="w-full rounded-lg shadow-lg"
-          priority //  Tự động tải trước, không cần `loading="eager"`
-          placeholder="blur" //  Hiển thị ảnh mờ trước khi tải đầy đủ
+          priority
+          placeholder="blur"
+          blurDataURL="https://via.placeholder.com/300x200"
+          loading="lazy"
         />
 
 

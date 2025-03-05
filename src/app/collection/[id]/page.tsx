@@ -1,4 +1,4 @@
-"use client"; // ✅ Đảm bảo chạy trên client
+" use client "; // ✅ Đảm bảo chạy trên client
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";

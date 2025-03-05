@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext, useContext, useState, useEffect } from "react"; // Import các hook cần thiết của React
 import { onAuthStateChanged, User } from "firebase/auth"; // Import Firebase auth và User interface
 import { auth } from "@/lib/firebaseConfig"; // Import cấu hình auth từ firebaseConfig
@@ -28,7 +30,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []); // useEffect chỉ chạy một lần khi component mount
 
   return (
-    <AuthContext.Provider value={{ user, loading }}> 
+    <AuthContext.Provider value={{ user, loading }}>
       {/* Cung cấp context cho các component con */}
       {children}
     </AuthContext.Provider>
@@ -39,7 +41,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext); // Lấy giá trị context
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider"); 
+    throw new Error("useAuth must be used within an AuthProvider");
     // Nếu context chưa được bao bọc bởi AuthProvider thì báo lỗi
   }
   return context; // Trả về thông tin người dùng và trạng thái loading
